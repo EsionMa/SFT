@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.huanzhe.HuanZheContractMapper">
+
+    <select id="selectPage" resultType="java.util.Map">
+    	select * 
+    	from hzsf_hz_contact hc
+    	where 1=1
+    	<if test="hzId != null and hzId != ''">
+    		and hc.hz_id=#{hzId}
+    	</if>
+    </select>
+    <delete id="deleteByHzId">
+    delete from hzsf_hz_contact 
+    	where hz_id=#{hzId}
+    </delete>
+    <select id="selectByHzId" resultType="com.wangzhixuan.model.vo.huanzhe.HuanZheContractVo">
+    select * from hzsf_hz_contact where hz_id=#{hzId}
+    </select>
+</mapper>

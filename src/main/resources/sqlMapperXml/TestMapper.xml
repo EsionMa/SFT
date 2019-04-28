@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.test.TestMapper">
+   <sql id="Hospitalization">
+	   xm,ry_fs,mz_zd,ry_rq,mc_mc,ry_cwh,cy_rq,cy_oper,mz_ry,mz_qk,mz_rq,grbm,ryzd,xgr,ry_oper,ykc147,akc195,kh,blh,bah_cs,ry_bmbm,xb,gfzf,csrq,wf,dh,jtzz
+   </sql>
+
+	<select id="select" resultType="java.util.Map">
+		SELECT xm,xb,bmbm,zdrq,csrq FROM MZGH_DJB WHERE sf_cy='1'
+	</select>
+	<select id="getAllHos" resultType="java.util.Map">
+		SELECT  <include refid="Hospitalization"/>
+		FROM ZY_BAHDJB
+	</select>
+	<select id="getAllDept" resultType="java.util.Map">
+		SELECT BH,MC,BJ FROM B_ZY_BMBM
+	</select>
+
+
+
+</mapper>

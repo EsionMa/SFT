@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.fa.FangAnDingYiItemMapper">
+    <select id="findByFangAnId" resultType="com.wangzhixuan.model.vo.fa.FangAnDingYiItemVo">
+		SELECT
+			id,fa_id AS faId,zxsj_lx AS zxsjLx,zxsj,gjtzx,zxjg,zts,sf_type AS sfType,
+			create_time AS createTime,update_time AS updateTime,
+			create_user_id AS createUserId,update_user_id AS updateUserId,
+			sms_content AS smsContent,sms_send_time AS smsSendTime
+		FROM hzsf_fa_dy_item
+		WHERE fa_id=#{faId}
+	</select>
+	
+	<!--  刪除之前的方案item -->
+    <delete id="deleteByFaIdAndIdNotIn">
+        DELETE FROM hzsf_fa_dy_item WHERE 1=1
+        <if test="ids != null and ids.size()>0">
+            AND id NOT IN
+            <foreach item="item" index="index" collection="ids" open="("
+                     separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND fa_id=#{faId}
+    </delete>
+    
+    <!-- 插入方案执行人 -->
+    <insert id="insertExeUsers">
+		INSERT INTO fa_dy_item_exe (item_id,exe_user_id)
+		VALUES (#{itemId},#{exeUserId})
+	</insert>
+	
+	<!-- 查询方案item中的执行人 -->
+    <select id="selectExeUsers" resultType="java.util.Map">
+		SELECT
+			u.name,
+			u.id,
+			u.user_type AS userType
+		FROM
+			fa_dy_item_exe e
+		LEFT JOIN sys_user u ON e.exe_user_id = u.id
+		WHERE e.item_id=#{itemId}
+	</select>
+	
+	<!-- 根据itemId删除执行人 -->
+    <delete id="deleteExeUserByItemId">
+        DELETE FROM fa_dy_item_exe WHERE item_id=#{itemId}
+    </delete>
+    
+    <!-- 插入方案执行人 -->
+    <insert id="insertWenJuan">
+		INSERT INTO hzsf_fa_dy_item_wj (fa_item_id,wj_id)
+		VALUES (#{itemId},#{wjId})
+	</insert>
+	
+	<!-- 根据itemId删除执行人 -->
+    <delete id="deleteWenJuanByItemId">
+        DELETE FROM hzsf_fa_dy_item_wj WHERE fa_item_id=#{itemId}
+    </delete>
+    
+	<!--  更新方案item中的问卷 -->
+    <update id="updateWenJuanByItemId">
+    	UPDATE hzsf_fa_dy_item_wj SET wj_id=#{wjId} WHERE wj_id=#{beforeId}
+    </update>
+    
+    <!-- 查询方案item中的问卷 -->
+    <select id="selectWenJuans" resultType="java.util.Map">
+		SELECT w.id,w.wjzt FROM hzsf_wj w,hzsf_fa_dy_item_wj dw
+		WHERE w.id=dw.wj_id
+		<if test="itemId != null and itemId != ''">
+			AND dw.fa_item_id=#{itemId}
+		</if>
+	</select>
+    
+</mapper>

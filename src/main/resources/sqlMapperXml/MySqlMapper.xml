@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.sqlserver.MysqlMapper">
+
+	<!-- 获取患者信息 -->
+	<select id="selectPatient" parameterType="java.lang.String"
+		resultType="com.wangzhixuan.model.huanzhe.HuanZheInfo">
+		SELECT out_id,id,name FROM hzsf_hz_info WHERE 1=1
+		<if test="outId !=null and outId !=''">
+			AND out_id=#{outId}
+		</if>
+		ORDER BY create_time DESC LIMIT 1
+	</select>
+
+	<!--获取科室信息 -->
+	<select id="selectOrg" parameterType="java.lang.String"
+		resultType="com.wangzhixuan.model.SysOrganization">
+		SELECT id,name FROM sys_organization WHERE 1=1
+		<if test="outId !=null and outId !=''">
+			AND out_id=#{outId}
+		</if>
+	</select>
+
+	<!--查询用户信息 -->
+	<select id="selectUser" parameterType="java.lang.String" resultType="com.wangzhixuan.model.SysUser">
+		SELECT id,name FROM sys_user WHERE 1=1
+		<if test="outId !=null and outId !=''">
+			AND out_id=#{outId}
+		</if>
+	</select>
+	<!--查询某月的住院人数-->
+	<select id="count" resultType="java.lang.Integer" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT COUNT(*) FROM hzsf_zy_info WHERE 1=1
+		<if test="boStTime!=null">
+			AND cytime<![CDATA[>]]> #{boStTime}
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime<![CDATA[<=]]> #{boEdTime}
+		</if>
+	</select>
+	<!--某月的住院的out_id集合-->
+	<select id="findZyNos" resultType="java.lang.String" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT zy_no FROM hzsf_zy_info WHERE cytime<![CDATA[>]]> #{boStTime} AND cytime<![CDATA[<=]]> #{boEdTime}
+	</select>
+    <select id="existHos" resultType="java.lang.Integer" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT   COUNT(*) FROM hzsf_zy_info WHERE 1=1
+		<if test="boStTime!=null and boStTime!=''">
+			AND cytime<![CDATA[>=]]> #{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND cytime<![CDATA[<]]> #{boEdTime}
+		</if>
+		<if test="zyNo!=null and zyNo!=''">
+			AND zy_no=#{zyNo}
+		</if>
+	</select>
+</mapper>

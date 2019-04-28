@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.icd.IcdMapper">
+    <insert id="insertNodeAndCode" parameterType="java.util.Map">
+        INSERT INTO sys_icd_node(code,node_id) VALUES (#{code},#{nodeId})
+    </insert>
+    <delete id="deleteNodeAndIcd" parameterType="java.lang.Long">
+        DELETE  FROM sys_icd_node WHERE node_id=#{nodeId}
+    </delete>
+
+    <!--通过知识库nodeId得到icd列表-->
+    <select id="getIcdListByNode" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.icd.Icd">
+        SELECT i.code,i.name,i.jpm
+        FROM sys_icd_node n LEFT JOIN sys_icd_10 i ON i.code=n.code
+        WHERE n.node_id=#{nodeId}
+    </select>
+</mapper>

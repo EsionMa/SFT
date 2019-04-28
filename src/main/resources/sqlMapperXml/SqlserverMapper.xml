@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.sqlserver.SqlserverMapper">
+	<sql id="Hospitalization">
+		xm,ry_fs,mz_zd,ry_rq,mc_mc,ry_cwh,cy_rq,cy_oper,mz_ry,mz_qk,mz_rq,grbm,ryzd,xgr,ry_oper,ykc147,akc195,kh,blh,bah_cs,ry_bmbm,xb,gfzf,csrq,wf,dh,jtzz
+	</sql>
+	<!--科室增加 -->
+	<select id="selectAllDepts" parameterType="java.util.Date"
+		resultType="com.wangzhixuan.model.SysOrganization">
+		SELECT [科室id] AS outId,[上级科室id] AS outPid , [科室名称] AS
+		name,[科室名称拼音] AS code, [科室大类别] AS type FROM
+		SFT_DEPT WHERE [科室大类别]!=1
+		AND [上级科室id] IN (1020200,1010400)
+	</select>
+	<!--字典添加 -->
+	<select id="selectAllDics" parameterType="java.util.Date"
+		resultType="com.wangzhixuan.model.SysDictionaries">
+		SELECT [编码] AS code, [编码名称] AS name ,[父节点编码] AS parentCode
+		,[是否未当前使用] AS status FROM SFT_ZD
+	</select>
+	<!--医生护士增加 -->
+	<select id="selectAllStaff" parameterType="java.util.Date"
+		resultType="com.wangzhixuan.model.SysUser">
+		SELECT [医生护士id] AS outId,[医生护士姓名] AS name,[所属科室id] AS orgId
+		,[类型] AS typeId FROM SFT_EMP WHERE [所属科室id] in('1020200','1010400')
+	</select>
+	<!--患者增加 -->
+	<select id="selectAllPatients" parameterType="java.util.Date"
+		resultType="com.wangzhixuan.model.huanzhe.HuanZheInfo">
+		SELECT patientid AS outId,patientid AS hzno,ref_property_marryiage AS
+		marriage,cname AS name,yibaotype AS ybtype,yibaonum AS ybno,birthday
+		AS birthday, fixphone AS mobilephone,ref_property_job AS profession,
+		ref_property_nation AS natinonRef,rytime AS
+		createTime,ref_property_country AS countryRef,ref_property_province AS
+		provinceRef,ref_property_city AS cityRef,addr AS addr,identitynum AS
+		idcardno,ref_property_sex AS sex,unit AS company
+		FROM SFT_PATIENT_MI
+		<where>
+			<if test="boStTime!=null and boStTime!=''">
+				AND rytime<![CDATA[>]]>#{boStTime}
+			</if>
+			<if test="boEdTime!=null and boEdTime!=''">
+				AND rytime<![CDATA[<]]>#{boEdTime}
+			</if>
+		</where>
+	</select>
+
+	<!--住院添加 -->
+	<select id="selectAllHos" parameterType="java.util.Date"
+		resultType="com.wangzhixuan.model.huanzhe.ZhuYuanInfo">
+		SELECT zynum AS zyNo,rytime AS rytime,patientid AS hzNo,patientid AS
+		outId,ref_staff_zrdoctor AS zrIdv,ref_staff_zzdoctor AS zzIdv
+		,ref_staff_gcdoctor AS gcIdv,ref_staff_zydoctor AS zyIdv,cishu AS
+		zycount,cw AS cwno,bingqu AS bq,ref_dept_rydept AS ryDeptId,
+		ref_property_rytype AS rytype,ref_property_ryqk AS
+		ryqk,ref_diagnosis_ryzd AS ryzd, cytime AS cytime,ref_dept_cydept AS
+		cyDeptId,ref_diagnosis_cyzd AS cyzd,
+		cyqk AS cyqk,age FROM SFT_ZY_INACT
+		WHERE ref_dept_cydept in('1020200','1010400')
+		<if test="boStTime!=null and boStTime!=''">
+			AND rytime<![CDATA[>]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND rytime<![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+	<!--联系人 -->
+	<select id="selectContact" resultType="com.wangzhixuan.model.huanzhe.HuanZheContract">
+		SELECT patientid AS outId,imname AS name,imcellphone AS
+		mobilephone,imaddr AS addr FROM SFT_PATIENT_MI
+		<where>
+			<if test="boStTime!=null and boStTime!=''">
+				AND rytime<![CDATA[>]]>#{boStTime}
+			</if>
+			<if test="boEdTime!=null and boEdTime!=''">
+				AND rytime<![CDATA[<]]>#{boEdTime}
+			</if>
+		</where>
+	</select>
+
+
+
+</mapper>

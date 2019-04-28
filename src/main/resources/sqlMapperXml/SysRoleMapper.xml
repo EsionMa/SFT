@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.SysRoleMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, name, seq, description, status
+    </sql>
+
+    <select id="selectResourceIdListByRoleId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+            e.resource_id AS id
+        FROM
+            sys_role r
+        LEFT JOIN sys_role_resource e ON r.id = e.role_id
+        WHERE
+            r.id = #{id}
+    </select>
+
+    <select id="selectResourceListByRoleIdList" resultType="SysResource"
+            parameterType="java.lang.Long">
+        SELECT
+            DISTINCT s.id AS id,
+            s.NAME AS 'name',
+            s.url AS url,
+            s.description AS description,
+            s.icon AS icon,
+            s.pid AS pid,
+            s.seq AS seq,
+            s.STATUS AS 'status',
+            s.open_mode AS openMode,
+            s.opened as opened,
+            s.resource_type AS resourceType,
+            s.create_time AS createTime
+        FROM
+            sys_role r
+        LEFT JOIN sys_role_resource e ON r.id = e.role_id
+        LEFT JOIN sys_resource s ON e.resource_id = s.id
+        WHERE
+            r.id in  
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+                #{item}
+            </foreach>
+        AND (s.resource_type = 0 or s.resource_type = 1)
+        ORDER BY seq
+    </select>
+
+    <select id="selectResourceListByRoleId" resultType="java.util.HashMap" parameterType="java.lang.Long">
+        SELECT
+            e.id AS id,
+            s.url AS url
+        FROM
+            sys_role r
+        LEFT JOIN sys_role_resource e ON r.id = e.role_id
+        LEFT JOIN sys_resource s ON e.resource_id = s.id
+        WHERE
+            r.id = #{id}
+    </select>
+
+	<select id="selectRolesByUserId" resultType="com.wangzhixuan.model.SysRole" parameterType="java.lang.Long">
+    	SELECT r.* FROM sys_role r,sys_user_role ur
+		WHERE r.id=ur.role_id AND ur.user_id=#{userId}
+		ORDER BY seq ASC
+    </select>
+    
+</mapper>

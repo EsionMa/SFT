@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.WenJuanShiLiMapper">
+
+    <update id="disableAllWeiDiaoCha">
+		update hzsf_wj_sl
+		set status='9'
+		where status='1'
+		and fa_id=#{faId}
+	</update>
+	<delete id="deleteAllShiLi" parameterType="java.lang.Long">
+		DELETE  FROM hzsf_wj_sl
+		WHERE  status='1'
+		  AND fa_id=#{faId}
+	</delete>
+
+	<!--以前没有判断actual 可以等于具体某值-->
+	<select id="findByCondition" resultType="java.util.Map">
+		SELECT wj.id, zy.hz_id AS hzId,zy.hz_no AS hzNo,zy.hz_name AS
+		hzName,zy.cy_dept_id AS cyDeptId,zy.plzd ,zy.cytime AS cytime,wj.wjzt,
+		wj.jhsf_date AS jhsfDate,wj.dc_time AS dcTime,
+		wj.status,wj.update_user_id AS updateUserId,wj.create_user_id AS
+		createUserId,
+		zy.cy_dept_name AS cyDeptName
+		FROM hzsf_wj_sl wj LEFT JOIN
+		hzsf_zy_info zy ON wj.hz_ls_id=zy.id
+		WHERE 1=1
+		<if test="hzName!=null and hzName!=''">
+			AND wj.hz_name=#{hzName}
+		</if>
+		<if test="zyNo!=null and zyNo!=''">
+			AND zy.zy_no=#{zyNo}
+		</if>
+		<if test="status !=null and status !=''">
+			AND wj.status= #{status}
+		</if>
+		<if test="deptId!=null and deptId!=''">
+			AND wj.dept_id=#{deptId}
+		</if>
+		<choose>
+			<when test="actual!=null and actual!=''">
+				<include refid="findByActual" />
+			</when>
+			<otherwise>
+				<include refid="findByplan" />
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="queryItemIdByExeUserId" resultType="java.lang.Long">
+		select item_id as
+		itemId from fa_dy_item_exe
+		where exe_user_id=#{exeUserId} OR exe_user_id=0
+	</select>
+	<!--按照计划时间查询 -->
+	<sql id="findByplan">
+		<if test="staTime!=null">
+			AND wj.jhsf_date <![CDATA[ >= ]]>#{staTime}
+		</if>
+		<if test="endDate!=null">
+			AND wj.jhsf_date <![CDATA[ <= ]]>#{endDate}
+		</if>
+		ORDER BY wj.jhsf_date DESC
+	</sql>
+	<!--按照实际随访时间查询 -->
+	<sql id="findByActual">
+		<if test="staTime!=null">
+			AND wj.dc_time <![CDATA[ >= ]]>#{staTime}
+		</if>
+		<if test="endDate!=null">
+			AND wj.dc_time <![CDATA[ <= ]]>#{endDate}
+		</if>
+		ORDER BY wj.dc_time DESC
+	</sql>
+<!--某段时间出院人数-->
+<select id="leaveCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT COUNT("id") AS total   FROM hzsf_zy_info
+	WHERE 1=1
+	 <if test="staTime!=null">
+		 AND cytime  <![CDATA[ >= ]]> #{staTime}
+	 </if>
+	<if test="endTime!=null">
+		AND cytime <![CDATA[ <= ]]> #{endTime}
+	</if>
+	<if test="deptId!=null and deptId!=''">
+		AND cy_dept_id=#{deptId}
+	</if>
+</select>
+
+	<!--各种随访类型人数-->
+	<select id="sfCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(DISTINCT hz_ls_id) AS total FROM  hzsf_wj_sl WHERE 1=1
+		<if test="status!=null and status!=''">
+			AND status=#{status}
+		</if>
+		<if test="staTime !=null">
+			AND  other_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime !=null">
+			AND other_time <![CDATA[ <= ]]> #{endTime}
+		</if>
+		<if test="deptId !=null and deptId!=''">
+			AND dept_id=#{deptId}
+		</if>
+	</select>
+	<!--所有随访人数-->
+	<select id="allCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*) AS total FROM  hzsf_wj_sl WHERE  status <![CDATA[ <> ]]> '9'
+		<if test="faId !=null">
+			AND  fa_id =#{faId}
+		</if>
+		<if test="staTime !=null">
+			AND  other_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime !=null">
+			AND other_time <![CDATA[ <= ]]> #{endTime}
+		</if>
+		<if test="deptId !=null and deptId!=''">
+			AND dept_id=#{deptId}
+		</if>
+	</select>
+	<!--用户随访各种状态人数-->
+	<select id="userSfCount" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT COUNT(1),status AS total FROM hzsf_wj_sl WHERE status <![CDATA[ <> ]]> '9'
+		<if test="staTime!=null">
+			AND other_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime!=null">
+			AND other_time <![CDATA[ < ]]> #{endTime}
+		</if>
+		<if test="userId !=null and userId !=''">
+			AND update_user_id=#{userId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND status=#{status}
+		</if>
+		<if test="deptId !=null and deptId!=''">
+			AND dept_id=#{deptId}
+		</if>
+		GROUP BY status
+	</select>
+	<!--用户所有随访-->
+	<select id="userAllCount" resultType="java.lang.Integer">
+		SELECT COUNT(1) AS total FROM  hzsf_wj_sl WHERE 1=1
+			AND status <![CDATA[ <> ]]> '9'
+		<if test="staTime!=null">
+			AND other_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime!=null">
+			AND other_time <![CDATA[ < ]]> #{endTime}
+		</if>
+		<if test="userId !=null and userId !=''">
+			AND doctor_id=#{userId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND status=#{status}
+		</if>
+		<if test="deptId !=null and deptId!=''">
+			AND dept_id=#{deptId}
+		</if>
+	</select>
+	<select id="statusCount" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT  count(1) AS  total,status FROM hzsf_wj_sl WHERE status <![CDATA[ <> ]]> '9'
+		<if test="faId !=null">
+			AND  fa_id =#{faId}
+		</if>
+		<if test="staTime !=null">
+			AND  other_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime !=null">
+			AND other_time <![CDATA[ <= ]]> #{endTime}
+		</if>
+		<if test="deptId !=null and deptId!=''">
+			AND dept_id=#{deptId}
+		</if>
+		GROUP BY status
+	</select>
+	<!--今日随访人数-->
+	<select id="plan" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT  count(*) FROM  hzsf_wj_sl
+		WHERE  status='1'
+		<if test="!hasAu">
+			<if test="doctorId!=null and doctorId!=''">
+				AND doctor_id=#{doctorId}
+			</if>
+		</if>
+		<if test="staTime !=null">
+			AND  jhsf_date <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime !=null">
+			AND jhsf_date <![CDATA[ <= ]]> #{endTime}
+		</if>
+	</select>
+	<!--今日已随访-->
+	<select id="already" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*) FROM  hzsf_wj_sl
+		WHERE status !='1' AND status!='9'
+		<if test="!hasAu">
+			<if test="updateUserId!=null and updateUserId!=''">
+				AND  update_user_id=#{updateUserId}
+			</if>
+		</if>
+		<if test="staTime !=null">
+			AND  update_time <![CDATA[ >= ]]> #{staTime}
+		</if>
+		<if test="endTime !=null">
+			AND update_time <![CDATA[ <= ]]> #{endTime}
+		</if>
+	</select>
+	<select id="homeCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT count(*) FROM  hzsf_wj_sl WHERE status!='9'
+		  AND jhsf_date <![CDATA[ >= ]]> #{staTime}
+		  AND jhsf_date <![CDATA[ < ]]> #{endTime}
+		  <if test="state!=null and state!=''">
+			  AND status=#{state}
+		  </if>
+	</select>
+	
+	<select id="selectOneByPauseTime" resultType="com.wangzhixuan.model.wenjuan.WenJuanShiLi">
+		SELECT 
+			id,fa_id AS faId,fa_item_id AS faItemId,wj_id AS wjId,hz_ls_id AS hzLsId,
+			hz_id AS hzId,hz_name AS hzName,doctor_id AS doctorId,doctor_name AS doctorName,
+			hs_id AS hsId,hs_name AS hsName,dept_id AS deptId, dept_name AS deptName,
+			other_time AS otherTime,hz_mobile_phone AS hzMobilePhone,wjzt,jhsf_date AS jhsfDate,
+			dc_time AS dcTime,sf_type sfType,dcxj,zxfs,sfnm,ybno,zlcard,`status`,
+			create_time AS createTime,create_user_id AS createUserId,update_time AS updateTime,
+			update_user_id AS updateUserId,fa_type AS faType,hzly
+		FROM hzsf_wj_sl
+		WHERE fa_type=#{faType} AND jhsf_date>#{pauseTime} 
+		ORDER BY other_time ASC LIMIT 1
+	</select>
+
+</mapper>

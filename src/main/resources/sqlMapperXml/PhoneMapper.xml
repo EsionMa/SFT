@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.phone.PhoneMapper">
+
+	<sql id="phoneVo">
+		p.id,p.hz_id AS hzId,p.user_id AS userId,p.sf_id AS
+		sfId,p.phone_num AS
+		phoneNum,p.file AS fileLoad,
+		p.create_Time AS
+		creTime,p.end_time AS endDate,p.sf_type AS sfType,
+	</sql>
+
+	<select id="findByHzId" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		<include refid="phoneVo"></include>
+		hz.name,hz.sex,u.name FROM hzsf_phone p LEFT JOIN hzsf_hz_info hz ON
+		p.hz_id =hz.id
+		LEFT JOIN sys_user u ON p.user_id=u.id
+		WHERE 1=1
+		<if test="hzId!=null">
+			AND p.hz_id=#{hzId}
+		</if>
+		<if test="sfId!=null">
+			AND p.sf_id = #{sfId}
+		</if>
+		ORDER BY p.create_Time DESC
+	</select>
+
+	<select id="getCallTimes" parameterType="java.lang.Long"
+		resultType="java.lang.Integer">
+		SELECT count(*) FROM hzsf_phone WHERE user_id=#{userId}
+	</select>
+
+	<select id="selectRecord" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT w.id AS id,w.hz_name AS hzName,z.zy_no AS zyNo,p.phone_num AS phoneNum,w.doctor_name AS doctorName,w.hs_name AS hsName,
+		w.wjzt AS wjzt,p.file AS fileLoad,p.create_time AS creTime,p.end_time AS endTime,
+		CASE p.type WHEN '0'THEN '去电' WHEN '1' THEN '来电'END AS type,
+		CASE p.hold WHEN '0'THEN '未接' WHEN '1' THEN '已接'END AS hold,w.dept_name AS deptName ,p.user_id AS userId
+		from hzsf_wj_sl w
+		LEFT JOIN hzsf_phone p on p.hz_id = w.hz_id
+		LEFT JOIN hzsf_zy_info z on z.hz_id = w.hz_id
+		<where>
+			<if test="hzName !=null and hzName !=''">
+				w.hz_name = #{hzName}
+			</if>
+			<if test="deptId !=null and deptId !=''">
+				w.dept_id = #{deptId}
+			</if>
+			<if test="zyNo !=null and zyNo !=''">
+				z.zy_no = #{zyNo}
+			</if>
+			<!--<if test="holdTime != null and holdTime != ''">-->
+				<!--holdTime=#{SELECT TIMESTAMPDIFF(SECOND,creTime,endTime)};-->
+			<!--</if>-->
+		</where>
+	</select>
+
+</mapper>

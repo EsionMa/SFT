@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.fa.FangAnDingYiMapper">
+	<select id="findAll" resultType="com.wangzhixuan.model.fa.FangAnDingYi">
+		select * from hzsf_fa_dy
+	</select>
+    <select id="findDeptIdsByFaId" parameterType="java.lang.Long" resultType="java.lang.String">
+		SELECT dept_ids
+		 FROM  hzsf_fa_zy_group
+		 WHERE fa_id=#{faId}
+	</select>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.zhishiku.ZhiShiKuMapper">
+	<update id="updateZhishiku" parameterType="com.wangzhixuan.model.vo.zhishiku.ZhiShiKuVo">
+		UPDATE hzsf_zhishiku
+		SET
+		node_id=#{nodeId},type=#{type},title=#{title},content=#{content},update_time=#{updateTime},
+		update_user_id=#{updateUserId} WHERE id=#{id}
+	</update>
+
+	<select id="findByPId" parameterType="java.lang.Long"
+			resultType="com.wangzhixuan.model.zhishiku.ZhiShiKuNode">
+		SELECT * FROM hzsf_zhishiku_node
+		<where>
+			<if test="parentId!=null and parentId!=''">
+				parent_id=#{parentId}
+			</if>
+		</where>
+		ORDER BY update_time DESC
+	</select>
+
+	<select id="findPIdByNodeId" parameterType="java.lang.Long"
+			resultType="java.lang.Long">
+		SELECT parent_id FROM hzsf_zhishiku_node WHERE id=#{id}
+	</select>
+
+	<select id="findPIdByDeptId" parameterType="java.lang.Long"
+			resultType="java.lang.Long">
+		SELECT id FROM hzsf_zhishiku_node WHERE dept_id=#{deptId}
+	</select>
+	<select id="queryByIcd" resultType="java.lang.Long">
+		SELECT node_id FROM sys_icd_node
+		WHERE code=#{icd}
+	</select>
+	<select id="queryByNodeId4DataGrid" resultType="com.wangzhixuan.model.vo.zhishiku.ZhiShiKuVo" parameterType="java.util.Map">
+		SELECT n.text AS diseaseName,n.parent_id AS deptId, z.id,z.node_id AS nodeId,z.type,z.title,z.content,z.create_time AS createTime,
+		   z.update_time AS updateTime,z.create_user_id AS createUserId,z.update_user_id AS updateUserId
+		 FROM hzsf_zhishiku z LEFT  JOIN  hzsf_zhishiku_node n ON  z.node_id=n.id
+		 WHERE 1=1
+		 <if test="type!=null and type!=''">
+			 AND z.type=#{type}
+		 </if>
+		 <if test="nodeId !=null and nodeId!=''">
+			AND z.node_id=#{nodeId}
+		 </if>
+		 <if test="title !=null and title!=''">
+			 AND z.title LIKE CONCAT('%',#{title},'%')
+		 </if>
+		 <if test="content!=null and content!=''">
+			 AND z.content LIKE CONCAT('%',#{content},'%')
+		 </if>
+		 <if test="diseaseName!=null and diseaseName!=''">
+			 AND n.text LIKE CONCAT('%',#{diseaseName},'%')
+		 </if>
+	</select>
+
+
+</mapper>

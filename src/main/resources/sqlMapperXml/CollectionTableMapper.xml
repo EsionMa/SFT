@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.collection.CollectionTableMapper">
+    
+    <!--分页+搜索 -->
+	<select id="selectPage" parameterType="com.wangzhixuan.model.vo.collection.CollectionTableVo"
+		resultType="java.util.Map">
+		SELECT
+			ct.id,ct.status,ct.name,ct.type,ct.create_time AS createTime,
+			ct.create_user_name AS createUserName,ct.update_time AS updateTime,
+			ct.update_user_name AS updateUserName,d.name AS typeName
+		FROM 
+			hzsf_collection_table ct,sys_dictionaries d
+		WHERE
+			ct.type=d.code AND d.parent_code=#{parentCode}
+		<if test="status!=null and status!=''">
+			AND ct.status=#{status}
+		</if>	
+		<if test="name!=null and name!=''">
+			AND ct.name LIKE '%${name}%'
+		</if>
+		<if test="type!=null and type!=''">
+			AND ct.type=#{type}
+		</if>
+		ORDER BY ct.update_time DESC
+	</select>
+    
+    <insert id="addItem">
+        INSERT INTO hzsf_table_type_item (table_id,type_id)
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            <![CDATA[( ]]>${id},${item}<![CDATA[)]]>
+        </foreach>
+    </insert>
+    <!--根据采集表id获取采集项id-->
+    <select id="getTypeIdsByTableId" resultType="java.lang.Long">
+        SELECT type_id
+        FROM hzsf_table_type_item
+        WHERE table_id=#{tableId}
+    </select>
+</mapper>

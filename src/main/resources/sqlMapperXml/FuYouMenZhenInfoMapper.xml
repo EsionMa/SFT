@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.fuyou.FuYouMenZhenInfoMapper">
+
+	<select id="selectedById" resultType="com.wangzhixuan.model.vo.fuyou.FuYouMenZhenInfoVo">
+	select * from hzsf_fy_mz_info where mz_no=#{mzNo}
+	</select>
+	<!--<select id="selectedData" parameterType="java.util.Map" resultType="java.util.Map">-->
+		<!--select mz.hz_no AS hzNo,mz.hz_name AS hzName,mz.sex,mz.phone,-->
+			   <!--fy.fy_week As fyWeek,fy.fy_day AS fyDay,fy.fy_verify_time As fyVerifyTime,-->
+			<!--fy.periodTime,fy.fy_site As fySite,fy.fy_live As fyLive,fy.cure,-->
+			<!--fy.fy_status As fyStatus,fy.fy_end_time As fyEndTime,fy.method,-->
+			<!--fy.`comment` from hzsf_fy_mz_info fy-->
+			<!--left join hzsf_mz_info mz on fy.mz_no = mz.mz_no-->
+		<!--WHERE 1=1-->
+		<!--<if test="hzName!=null and hzName!=''">-->
+			<!--AND mz.hz_name = #{hzName}-->
+		<!--</if>-->
+	<!--</select>-->
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.huanzhe.HuanZheInfoMapper">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id, hzly, jzks,
+		bz,zd,hzxb,zxhznl,zdhznl,sxsjlx,zxsxsj,zdsxsj,rule_group,statue,
+		create_time as createTime,update_time as updateTime,create_user_id as
+		createUserId,update_user_id as updateUserId
+	</sql>
+	<select id="selectPage" resultType="java.util.Map">
+		select *
+		from hzsf_hz_info hz
+		where 1=1
+		<if test="name != null and name != ''">
+			and name like CONCAT('%',#{name},'%')
+		</if>
+		order by hz.create_time desc
+	</select>
+	<select id="selectByhzNoAndhzId" resultType="com.wangzhixuan.model.huanzhe.HuanZheInfo">
+		select hz.*,u.name AS userName from hzsf_hz_info hz LEFT JOIN sys_user u ON hz.create_user_id = u.id
+		where 1=1
+		<if test="hzNo != null and hzNo != ''">
+			and hzno=#{hzNo}
+		</if>
+		<if test="hzId != null and hzId != ''">
+			and hz.id =#{hzId}
+		</if>
+	</select>
+
+	<select id="findByCondition" resultType="com.wangzhixuan.model.vo.huanzhe.HuanZheInfoVo">
+		select info.name,info.id,info.hzno,info.ybtype,info.ybno,info.create_time AS createTime,info.sex,info.mobilephone,
+		info.create_user_id AS createUserId,info.update_user_id AS updateUserId,hzly,
+		u.name AS userName
+		from hzsf_hz_info info
+		LEFT JOIN sys_user u ON info.create_user_id=u.id
+		WHERE 1=1
+		<if test="name!=null and name!=''">
+			AND info.name=#{name}
+		</if>
+		<if test="hzno!=null and hzno!=''">
+			AND info.hzno=#{hzno}
+		</if>
+		<if test="mobilePhone!=null and mobilePhone!=''">
+			AND info.mobilePhone=#{mobilePhone}
+		</if>
+		<if test="ids!=null and!ids.isEmpty">
+			AND info.id IN
+			<foreach item="item" index="index" collection="ids" open="("
+									separator="," close=")">
+			   #{item}
+			</foreach>
+		</if>
+		 ORDER BY info.update_time DESC
+	</select>
+
+
+
+
+	<select id="findByNum" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT id,name FROM hzsf_hz_info WHERE mobilephone=#{mobilephone}
+	</select>
+	<!--得到患者生日人数-->
+    <select id="getBirthCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*) FROM hzsf_hz_info
+          WHERE  date_format(birthday,'%m%d')
+          BETWEEN date_format(#{staDate},'%m%d')
+          AND date_format(#{endDate},'%m%d')
+	</select>
+	<select id="findByQuery" resultType="java.util.Map" parameterType="com.wangzhixuan.model.vo.huanzhe.HuanZheInfoVo">
+		SELECT  * FROM
+		 hzsf_hz_info
+		 WHERE 1=1
+		 <if test="name!=null and name!=''">
+			 AND name=#{name}
+		 </if>
+		<if test="hzno!=null and hzno!=''">
+			AND hzno=#{hzno}
+		</if>
+		<if test="mobilephone!=null and mobilephone!=''">
+			AND mobilephone=#{mobilephone}
+		</if>
+		<if test="isaliave!=null and isaliave!=''">
+			AND isaliave=#{isaliave}
+		</if>
+		<if test="sex!=null and sex!=''">
+			AND sex=#{sex}
+		</if>
+		<if test="ybtype!=null and ybtype!=''">
+			AND ybtype=#{ybtype}
+		</if>
+		<if test="ybno!=null and ybno!=''">
+			AND ybno=#{ybno}
+		</if>
+		<if test="birthday!=null and birthday!=''">
+			AND birthday=#{birthday}
+		</if>
+		<if test="marriage!=null and marriage!=''">
+			AND marriage=#{marriage}
+		</if>
+		<if test="fixphone!=null and fixphone!=''">
+			AND fixphone=#{fixphone}
+		</if>
+		<if test="zlcard!=null and zlcard!=''">
+			AND zlcard=#{zlcard}
+		</if>
+		<if test="idcardno!=null and idcardno!=''">
+			AND idcardno=#{idcardno}
+		</if>
+		<if test="profession!=null and profession!=''">
+			AND profession=#{profession}
+		</if>
+		<if test="zlcard!=null and zlcard!=''">
+			AND zlcard=#{zlcard}
+		</if>
+		<if test="profession!=null and profession!=''">
+			AND profession=#{profession}
+		</if>
+		<if test="staDate!=null">
+			AND create_time <![CDATA[>=]]> #{staDate}
+		</if>
+		<if test="endDate!=null">
+			AND create_time <![CDATA[<]]]> #{endDate}
+		</if>
+		<if test="birthSta!=null and birthEnd!=null">
+			AND date_format(birthday,'%m%d')
+			BETWEEN date_format(#{birthSta},'%m%d')
+			AND date_format(#{birthEnd},'%m%d')
+		</if>
+		ORDER BY create_time DESC
+	</select>
+
+</mapper>

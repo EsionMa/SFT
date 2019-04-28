@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.GroupRuleMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, hzly, jzks, bz,zd,hzxb,zxhznl,zdhznl,sxsjlx,zxsxsj,zdsxsj,rule_group,statue,
+        create_time as createTime,update_time as updateTime,create_user_id as createUserId,update_user_id as updateUserId
+    </sql>
+    <select id="selectPage" resultType="java.util.Map">
+    	select * 
+    	from hzsf_hz_group_rule r
+    	where r.statue='1'
+    </select>
+</mapper>

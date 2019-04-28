@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.zhishiku.ZhiShiKuNodeMapper">
+    <delete id="deleteByNodeId" parameterType="java.lang.Long">
+        DELETE FROM hzsf_zhishiku_node WHERE id=#{nodeId};
+    </delete>
+
+   <!-- <select id="findNodeByDeptId" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.vo.zhishiku.ZhiShiKuNodeVo">
+        SELECT id,dept_id AS  deptId,text,create_time AS createTime,update_time AS updateTime,create_user_id AS  createUserId,
+        update_user_id AS updateUserId
+        FROM hzsf_zhishiku_node
+        WHERE dept_id=#{deptId}
+    </select>-->
+    <select id="findNodeByPId" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.zhishiku.ZhiShiKuNode">
+        SELECT  id,parent_id AS parentId,text,create_time AS createTime,update_time AS updateTime,create_user_id AS createUserId,update_user_id AS updateUserId
+        FROM hzsf_zhishiku_node
+        WHERE parent_id=#{nodeId}
+    </select>
+    <select id="getNodesByCodes" resultType="java.lang.Long">
+        SELECT DISTINCT node_id FROM sys_icd_node
+         WHERE code IN
+        <foreach item="item" index="index" collection="codes" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

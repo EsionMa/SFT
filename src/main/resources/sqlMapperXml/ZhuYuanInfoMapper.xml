@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.huanzhe.ZhuYuanInfoMapper">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id,hz_id AS hzId,hz_no AS hzNo,hz_name AS hzName,zy_no AS
+		zyNo,zr_doctor_id AS zrDoctorId,zr_doctor_name AS zrDoctorName,
+		zz_doctor_id AS zzDoctorId,zz_doctor_name AS zzDoctorName,zy_doctor_id
+		AS zyDoctorId,zy_doctor_name AS zyDoctorName,
+		gc_doctor_id AS
+		gcDoctorId,zg_doctor_name AS zgDoctorName,gc_hs_id as
+		gcHsId,gc_hs_name as gcHsName,
+		age,zycount,bq,cwno,rytime,ry_dept_id AS
+		ryDeptId,ry_dept_name AS ryDeptName,
+		rytype,ryqk,plzd,ryzd,ryzd1,ryzd2,ryzd3,ryzd4,cyzd,cyzd1,cyzd2,cyzd3,cyzd4,cytime,
+		cy_dept_id AS cyDeptId,cy_dept_name AS cyDeptName,
+		cyqk,cyyz,mztime,mzno,create_time AS createTime,update_time AS
+		updateTime,
+		create_user_id AS createUserId,update_user_id AS
+		updateUserId
+	</sql>
+	<sql id="Insert_Column_List">
+		hz_id,hz_no,hz_name,zy_no,gc_doctor_id,
+		gc_doctor_name,gc_hs_id,gc_hs_name,zr_doctor_id,zr_doctor_name,
+		zz_doctor_id,zz_doctor_name,zy_doctor_id,zy_doctor_name,age,zycount,
+		bq,cwno,rytime,ry_dept_id,ry_dept_name,rytype,ryqk,plzd,ryzd,ryzd1,
+		ryzd2,ryzd3,ryzd4,cyzd,cyzd1,cyzd2,cyzd3,cyzd4,cytime,cy_dept_id,cy_dept_name,cyqk,
+		cyyz,mztime,mzno,create_time,create_user_id,update_time,update_user_id
+	</sql>
+
+	<select id="findByCondition" resultType="com.wangzhixuan.model.vo.huanzhe.ZhuYuanInfoVo">
+		select id,hz_id AS hzId,hz_no AS hzNo,hz_name AS hzName,zy_no AS
+		zyNo,age,zycount,rytime,ry_dept_id AS ryDeptId,ry_dept_name AS
+		ryDeptName,cy_dept_name AS cyDeptName,plzd,cytime,cy_dept_id AS
+		cyDeptId
+		from hzsf_zy_info WHERE 1=1
+		<if test="hzName!=null and hzName!=''">
+			AND hz_name =#{hzName}
+		</if>
+		<if test="zy_no!=null and zy_no!=''">
+			AND zy_no=#{zy_no}
+		</if>
+		<if test="hz_no!=null and hz_no!=''">
+			AND hz_no=#{hz_no}
+		</if>
+		<if test="plzd!=null and plzd!=''">
+			AND plzd=#{plzd}
+		</if>
+		<if test="deptId !=null and deptId !=''">
+			AND cy_dept_id=#{deptId}
+		</if>
+		ORDER BY rytime DESC
+
+		<!-- select <include refid="Base_Column_List"></include> -->
+		<!-- from hzsf_zy_info t -->
+		<!-- where 1=1 -->
+		<!-- <if test="deptIds != null and deptIds != ''"> -->
+		<!-- AND t.ry_dept_id in(#{deptIds}) -->
+		<!-- </if> -->
+		<!-- <if test="sex != null and sex != ''"> -->
+		<!-- AND t.sex in (#{sex}) -->
+		<!-- </if> -->
+		<!-- <if test="zxhznl != null"> -->
+		<!-- AND t.age > #{zxhznl} -->
+		<!-- </if> -->
+		<!-- <if test="zdhznl != null"> -->
+		<!-- AND t.age <= #{zdhznl} -->
+		<!-- </if> -->
+		<!-- <if test="sxsjlx != null and sxsjlx != ''"> -->
+		<!-- AND t.sxsjlx=#{sxsjlx} -->
+		<!-- </if> -->
+		<!-- <if test="rytime != null"> -->
+		<!-- AND -->
+		<!-- </if> -->
+	</select>
+	
+<select id="findByGroup" resultType="com.wangzhixuan.model.huanzhe.ZhuYuanInfo"
+		parameterType="com.wangzhixuan.model.vo.fa.FangAnZhuYuanGroupVo">
+		SELECT
+			zy.id,zy.hz_id AS hzId,zy.hz_no AS hzNo,zy.hz_name AS
+			hzName,zy.zy_no AS zyNo,zy.zr_doctor_id AS zrDoctorId,
+			zy.zr_doctor_name AS zrDoctorName,
+			zy.zz_doctor_id AS
+			zzDoctorId,zy.zz_doctor_name AS zzDoctorName,zy.zy_doctor_id AS
+			zyDoctorId,zy.zy_doctor_name AS zyDoctorName,
+			zy.gc_doctor_id AS
+			gcDoctorId,zy.gc_doctor_name AS gcDoctorName,zy.gc_hs_id as
+			gcHsId,zy.gc_hs_name as gcHsName,
+			zy.age,zy.zycount,zy.bq,zy.cwno,zy.rytime,zy.ry_dept_id AS
+			ryDeptId,zy.ry_dept_name AS ryDeptName,
+			zy.rytype,zy.ryqk,zy.plzd,zy.ryzd,zy.ryzd1,zy.ryzd2,zy.ryzd3,zy.ryzd4,zy.cyzd,zy.cyzd1,zy.cyzd2,zy.cyzd3,zy.cyzd4,zy.cytime,
+			zy.cy_dept_id AS cyDeptId,zy.cy_dept_name AS cyDeptName,
+			zy.cyqk,zy.cyyz,zy.mztime,zy.mzno,zy.create_time AS
+			createTime,zy.update_time AS updateTime,
+			zy.create_user_id AS
+			createUserId,zy.update_user_id AS updateUserId
+		FROM hzsf_zy_info zy 
+		<!-- LEFT JOIN hzsf_hz_info hz ON zy.hz_id=hz.id -->
+		WHERE
+			1=1
+		<if test="zhuYuanInfoIds != null and zhuYuanInfoIds.size()>0">
+			and zy.id in
+			<foreach collection="zhuYuanInfoIds" item="id" open="("
+				close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="sex != null and sex != ''">
+			and zy.sex=#{sex}
+		</if>
+		<if test="zxhznl != null">
+			and zy.age &gt;= #{zxhznl}
+		</if>
+		<if test="zdhznl != null">
+			and zy.age &lt;= #{zdhznl}
+		</if>
+		<if test="zxsxsj != null">
+			<if test="sxsjlx == '1'.toString()">
+				and zy.rytime &gt;= #{zxsxsj}
+			</if>
+			<if test="sxsjlx == '2'.toString()">
+				and zy.cytime &gt;= #{zxsxsj}
+			</if>
+		</if>
+		<if test="zdsxsj != null">
+			<if test="sxsjlx == '1'.toString()">
+				and zy.rytime &lt;= #{zdsxsj}
+			</if>
+			<if test="sxsjlx == '2'.toString()">
+				and zy.cytime &lt;= #{zdsxsj}
+			</if>
+		</if>
+		<if test="sxlx != null and sxlx != ''">
+			<if test="sxlx == '1'.toString()">
+				<if test="depts != null and depts.size()>0">
+					and zy.cy_dept_id in
+					<foreach collection="depts" item="dept" open="(" close=")"
+						separator=",">
+						#{dept.id}
+					</foreach>
+				</if>
+			</if>
+			<if test="sxlx == '2'.toString()">
+				<if test="cyzds != null and cyzds.size()>0">
+					and zy.cyzd in
+					<foreach collection="cyzds" item="cyzd" open="(" close=")"
+						separator=",">
+						#{cyzd.code}
+					</foreach>
+				</if>
+			</if>
+		</if>
+	</select>
+
+	<insert id="insertZyInfoBatch" parameterType="java.util.List"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO hzsf_zy_info (
+		<include refid="Insert_Column_List"></include>
+		) VALUES
+		<foreach item="item" collection="list" separator=",">
+			(#{item.id},#{item.hz_id},#{item.hz_no},#{item.hz_name},#{item.zy_no},#{item.gc_doctor_id},#{item.gc_doctor_name},
+			#{item.gc_hs_id},#{item.gc_hs_name},#{item.zr_doctor_id},#{item.zr_doctor_name},#{item.zz_doctor_id},#{item.zz_doctor_name},
+			#{item.zy_doctor_id},#{item.zy_doctor_name},#{item.age},#{item.zycount},#{item.bq},#{item.cwno},#{item.rytime},
+			#{item.ry_dept_id},#{item.ry_dept_name},#{item.rytype},#{item.ryqk},#{item.plzd},#{item.ryzd},#{item.ryzd1},
+			#{item.ryzd2},#{item.ryzd3},#{item.ryzd4},#{item.cyzd},#{item.cyzd1},#{item.cyzd2},#{item.cyzd3},#{item.cyzd4},
+			#{item.cytime},#{item.cy_dept_id},#{item.cy_dept_name},#{item.cyqk},#{item.cyyz},#{item.mztime},#{item.mzno},
+			#{item.create_time},#{item.create_user_id},#{item.update_time},#{item.update_user_id})
+		</foreach>
+	</insert>
+
+	<select id="export" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*) from hzsf_zy_info WHERE
+		update_time <![CDATA[ >= ]]> #{staTime}
+		AND update_time <![CDATA[ <= ]]> #{endTime}
+	</select>
+</mapper>

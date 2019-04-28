@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.huanzhe.MenZhenInfoMapper">
+	<sql id="baseSql">
+
+	</sql>
+	<select id="findByCondition" parameterType="java.util.Map"
+		resultType="com.wangzhixuan.model.huanzhe.MenZhenInfo">
+		SELECT id,hz_id AS hzId,hz_no AS hzNo,hz_name AS hzName,age,mz_no AS
+		mzNo,sex,mz_time AS mzTime,mz_dept_name AS mzDeptName,
+		mz_dept_id AS
+		mzDeptId,doctor_id AS doctorId,doctor_name AS doctorName,
+		disease_name
+		AS diseaseName,diagnose,update_user_id AS
+		updateUserId,update_time AS
+		updateTime,
+		create_user_id AS createUserId,diagnose_1 AS
+		diagnose1,diagnose_2 AS
+		diagnose2,major_describe AS
+		majorDescribe,disposition,
+		mz_count AS mzCount,disease_code AS
+		diseaseCode,create_time AS
+		createTime,regis_type AS regisType,regis_way
+		AS regisWay,
+		health_check AS healthCheck,ill_history AS
+		illHistory,assist_check AS
+		assistCheck,ill_now AS illNow
+		FROM
+		hzsf_mz_info
+		WHERE 1=1
+		<if test="hzName!=null and hzName !=''">
+			AND hz_name=#{hzName}
+		</if>
+		<if test="mzNo !=null and mzNo !=''">
+			AND mz_no=#{mzNo}
+		</if>
+		<if test="mzDeptId !=null">
+			AND mz_dept_id=#{mzDeptId}
+		</if>
+		ORDER BY mz_time DESC
+	</select>
+	<select id="findByGroup" resultType="com.wangzhixuan.model.huanzhe.MenZhenInfo"
+		parameterType="com.wangzhixuan.model.vo.fa.FangAnMenZhenGroupVo">
+		SELECT mz.id,mz.hz_id AS hzId,mz.hz_no AS hzNo,mz.hz_name AS
+		hzName,mz.age,mz.mz_no AS mzNo,mz.sex,mz.mz_time AS
+		mzTime,mz.mz_dept_name AS mzDeptName,
+		mz.mz_dept_id AS
+		mzDeptId,mz.doctor_id AS doctorId,mz.doctor_name AS doctorName,
+		mz.disease_name AS diseaseName,mz.diagnose,mz.update_user_id AS
+		updateUserId,mz.update_time AS updateTime,
+		mz.create_user_id AS
+		createUserId,mz.diagnose_1 AS diagnose1,mz.diagnose_2 AS
+		diagnose2,mz.major_describe AS majorDescribe,mz.disposition,
+		mz.mz_count AS mzCount,mz.disease_code AS diseaseCode,mz.create_time
+		AS createTime,mz.regis_type AS regisType,mz.regis_way AS regisWay,
+		mz.health_check AS healthCheck,mz.ill_history AS
+		illHistory,mz.assist_check AS assistCheck,mz.ill_now AS illNow
+		FROM
+		hzsf_mz_info mz
+		LEFT
+		JOIN hzsf_hz_info hz ON mz.hz_id=hz.id
+		WHERE
+		1=1
+		<if test="ageMin!=null">
+			AND mz.age <![CDATA[ >= ]]>
+			#{ageMin}
+		</if>
+		<if test="ageMax!=null">
+			AND mz.age <![CDATA[ <= ]]>
+			#{ageMax}
+		</if>
+		<if test="sex!=null and sex !=''">
+			AND mz.sex = #{sex}
+		</if>
+		<if test="mzCountMin!=null">
+			AND mz.mz_count <![CDATA[ >= ]]>
+			#{mzCountMin}
+		</if>
+		<if test="mzCountMax!=null">
+			AND mz.mz_count <![CDATA[ <= ]]>
+			#{mzCountMax}
+		</if>
+		<if test="departs != null and departs.size()>0">
+			AND mz.mz_dept_id in
+			<foreach collection="departs" item="dept" open="(" close=")"
+				separator=",">
+				#{dept.id}
+			</foreach>
+		</if>
+		<if test="ways != null and ways.size()>0">
+			AND mz.regis_way in
+			<foreach collection="ways" item="way" open="(" close=")"
+				separator=",">
+				#{way.code}
+			</foreach>
+		</if>
+		<if test="types != null and types.size()>0">
+			AND mz.regis_type in
+			<foreach collection="types" item="type" open="(" close=")"
+				separator=",">
+				#{type.code}
+			</foreach>
+		</if>
+		ORDER BY mz.mz_time DESC
+	</select>
+</mapper>

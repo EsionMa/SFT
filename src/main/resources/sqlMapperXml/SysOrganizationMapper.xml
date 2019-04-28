@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.SysOrganizationMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, name, address, code, icon, pid, seq, create_time AS createTime,type
+    </sql>
+	<select id="queryByParentId" resultType="com.wangzhixuan.model.SysOrganization">
+		select <include refid="Base_Column_List"></include>
+		from sys_organization
+		where 1=1
+		<if test="parentId != null">
+			and pid = #{parentId}
+		</if>
+		<if test="parentId==null">
+			and pid is null
+		</if>
+		<if test="type != null">
+			and type=#{type};
+		</if>
+	</select>
+    <select id="selectByType" resultType="com.wangzhixuan.model.SysOrganization">
+		SELECT id,name FROM sys_organization
+		WHERE type=#{type} order by seq
+	</select>
+
+</mapper>

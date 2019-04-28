@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.InsertMapper">
+
+    <insert id="insertHospitalization"   parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+ INSERT INTO hzsf_zy_info
+ (hz_id,hz_no,hz_name,zy_no,zz_doctor_id,zycount,cwno,rytime,ry_dept_id,cytime ,cy_dept_id , mztime,create_user_id,ryzd ,rytype)
+   VALUES
+      <foreach collection="list" item="item" separator="," >
+       (#{item.hzId},#{item.hzNo},#{item.hzName},#{item.zyNo},#{item.zzDoctorId},#{item.zycount},#{item.cwno},#{item.rytime},#{item.ryDeptId},#{item.cytime} ,#{item.cyDeptId} ,#{item.mztime},#{item.createUserId},#{item.ryzd},#{item.rytype})
+      </foreach>
+
+
+       </insert>
+
+    <insert id="insertPatients" parameterType="com.wangzhixuan.model.huanzhe.HuanZheInfo">
+        INSERT INTO hzsf_hz_info ( id,hzno, `name`, sex, ybtype, birthday, marriage, mobilephone, zlcard, create_time,addr ) VALUES
+        (#{id},#{hzno},#{name},#{sex},#{ybtype},#{birthday},#{marriage},#{mobilephone},#{zlcard},#{createTime},#{addr})
+    </insert>
+</mapper>

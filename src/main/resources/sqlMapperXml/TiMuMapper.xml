@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.TiMuMapper">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id, bt, tmfl, sfbt,txxz,dtms,dtxx, create_time as
+		createTime,update_time
+		as updateTime,create_user_id as
+		createUserId,update_user_id as
+		updateUserId
+	</sql>
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.wangzhixuan.model.wenjuan.TiMu">
+		insert into hzsf_wj_tm(ref_id,sy,bt, tmfl,
+		sfbt,txxz,dtms,dtxx,
+		create_time,update_time,create_user_id,update_user_id)
+		values(#{refId},#{sy},#{bt},#{tmfl},#{sfbt},#{txxz},#{dtms},#{dtxx},#{createTime},#{updateTime},#{createUserId},#{updateUserId})
+	</insert>
+	<select id="selectPage" resultType="java.util.Map">
+		SELECT tm.id, tm.bt, tm.tmfl, tm.sfbt,tm.txxz,tm.dtms,tm.dtxx,
+		tm.score,tm.create_time as createTime,tm.update_time as
+		updateTime,tm.create_user_id as createUserId,tm.update_user_id as
+		updateUserId,d.name as tmflName
+		FROM hzsf_wj_tm tm
+		LEFT JOIN sys_dictionaries d ON tm.tmfl=d.code
+		<where>
+			tm.sy is null AND tm.status='1'
+			<if test=" tmfl != null and tmfl != '' ">
+				AND tm.tmfl = #{tmfl}
+			</if>
+			<if test="bt!=null and bt!=''">
+				AND bt LIKE '%${bt}%'
+			</if>
+			<if test="txxz!=null and txxz!=''">
+				AND TXXZ=#{txxz}
+			</if>
+		</where>
+		ORDER BY tm.update_time DESC
+	</select>
+	<select id="listChoseByWjId" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.wenjuan.TiMu">
+		SELECT
+		tm.id, tm.bt, tm.tmfl,
+		tm.sfbt,tm.txxz,tm.dtms,tm.dtxx,tm.score, tm.create_time as
+		createTime,tm.update_time
+		as updateTime,tm.create_user_id as
+		createUserId,tm.update_user_id as
+		updateUserId,sy,ref_id,status,fz
+		FROM
+		hzsf_wj_item wji
+		INNER JOIN hzsf_wj_tm tm ON wji.tm_id = tm.id
+		where wji.wj_id=#{wjId} AND tm.txxz='1'
+	</select>
+	<select id="findByCondition" resultType="java.util.Map">
+		SELECT tm.id, tm.bt, tm.tmfl, tm.sfbt,tm.txxz,tm.dtms,tm.dtxx,
+		tm.create_time as createTime,tm.update_time as
+		updateTime,tm.create_user_id as createUserId,tm.update_user_id as
+		updateUserId,
+		d.name as tmflName
+		FROM hzsf_wj_tm tm
+		left join
+		sys_dictionaries d on tm.tmfl=d.code
+		WHERE tm.sy is null and
+		tm.status='1'
+		<if test="bt!=null and bt!=''">
+			AND bt LIKE '%${bt}%'
+		</if>
+		<if test="tmfl!=null and tmfl!=''">
+			AND TMFL=#{tmfl}
+		</if>
+		<if test="txxz!=null and txxz!=''">
+			AND TXXZ=#{txxz}
+		</if>
+		ORDER BY tm.update_time DESC
+	</select>
+	<select id="tmCountByWj" resultType="java.lang.Integer" parameterType="java.lang.Long" >
+		SELECT COUNT(*) FROM hzsf_wj_item  WHERE wj_id=#{wjId}
+	</select>
+    <select id="selectScore" resultType="java.lang.Double" parameterType="java.lang.Long">
+		SELECT  score FROM  hzsf_wj_tm WHERE id=#{tmId}
+	</select>
+</mapper>

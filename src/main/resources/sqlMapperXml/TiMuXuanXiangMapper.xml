@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.TiMuXuanXiangMapper">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id ,seq ,fz, xxnr, sfkt, stnr, create_time as
+		createTime,update_time as
+		updateTime,create_user_id as
+		createUserId,update_user_id as
+		updateUserId,tm_id
+	</sql>
+
+	<update id="deleteByTimuIdNotIn">
+		update hzsf_wj_tmxx
+		set status='9'
+		where tm_id=#{tmId}
+		<if test="xxIds != null and xxIds.size()>0">
+			and id not in
+			<foreach item="item" index="index" collection="xxIds" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</update>
+	<!--根据题目id删除选项-->
+	<delete id="deleteTmxxByTiMuId" parameterType="java.lang.Long">
+		DELETE FROM hzsf_wj_tmxx WHERE tm_id=#{id}
+	</delete>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.wangzhixuan.model.wenjuan.TimuXuanXiang">
+		insert into
+		hzsf_wj_tmxx(seq,xxnr,fz,sfkt,stnr,create_time,update_time,create_user_id,update_user_id,tm_id)
+		values(#{seq},#{xxnr},#{fz},#{sfkt},#{stnr},#{createTime},#{updateTime},#{createUserId},#{updateUserId},#{tmId})
+	</insert>
+
+	<select id="listByTiMuId" resultType="com.wangzhixuan.model.wenjuan.TimuXuanXiang">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		FROM hzsf_wj_tmxx
+		WHERE tm_id=#{tmId} AND status='1'
+		ORDER BY seq ASC
+	</select>
+	<!--根据选项id获得比重-->
+    <select id="selectPercent" resultType="java.lang.Double" parameterType="java.lang.Long">
+		SELECT fz FROM hzsf_wj_tmxx WHERE id=#{xxId}
+	</select>
+
+</mapper>

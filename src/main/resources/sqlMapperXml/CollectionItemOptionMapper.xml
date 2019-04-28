@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.collection.CollectionItemOptionMapper">
+    <select id="selectData" resultType="com.wangzhixuan.model.vo.collection.CollectionItemOptionVo">
+        SELECT id,type,content,unit,pid,create_time AS createTime,update_time AS updateTime,
+        create_user_name AS  createUserName
+        FROM hzsf_table_type_check
+        WHERE status=0
+        <if test="vo.type !=null and vo.type !=''">
+            AND type=#{vo.type}
+        </if>
+        <if test="vo.content!=null and vo.content!=''">
+            AND content=#{vo.content}
+        </if>
+    </select>
+    <select id="getCheckedsById" resultType="com.wangzhixuan.model.collection.CollectionItemOption">
+        SELECT c.id,c.type,c.content,c.unit
+         FROM hzsf_table_checked_type_item i
+         LEFT JOIN hzsf_table_type_check c
+         ON i.checked_id=c.id
+         WHERE i.type_id=#{id}
+    </select>
+</mapper>

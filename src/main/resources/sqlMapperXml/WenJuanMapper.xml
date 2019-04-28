@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.WenJuanMapper">
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		wj.id, wj.wjzt, wj.wjfl, wj.jzrq, wj.sfzdymb, wj.dclx, wj.syfw, wj.wjsm,
+		wj.create_time as createTime,wj.update_time as
+		updateTime,wj.create_user_id as createUserId,wj.update_user_id as
+		updateUserId
+	</sql>
+	
+	<insert id="save" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.wangzhixuan.model.wenjuan.TiMu">
+		INSERT INTO hzsf_wj(wjzt,wjfl, jzrq,sfzdymb,dclx,syfw,wjsm,
+		create_time,update_time,create_user_id,update_user_id)
+		VALUES (#{wjzt},#{wjfl},#{jzrq},#{sfzdymb},#{dclx},#{syfw},#{wjsm},#{createTime},#{updateTime},#{createUserId},#{updateUserId})
+	</insert>
+	
+	<select id="selectPage" resultType="java.util.Map">
+		SELECT wj.id, wj.wjzt, wj.wjfl, wj.jzrq, wj.sfzdymb, wj.dclx, wj.syfw,
+		wj.wjsm,wj.create_time as createTime,wj.create_user_id as createUserId,
+		wj.update_time as updateTime,wj.update_user_id as updateUserId,
+		u.name AS userName,wj.status,wj.dept_id AS deptId,
+		wj.zd_code AS zdCode,d.name AS wjflName
+		FROM hzsf_wj wj
+		LEFT JOIN sys_dictionaries d ON wj.wjfl=d.code
+		LEFT JOIN sys_user u ON wj.update_user_id=u.id
+		<where>
+			<if test=" wjfl != null and wjfl != '' ">
+				AND wj.wjfl = #{wjfl}
+			</if>
+			<!-- <if test=" wjfl ==null or wjfl =='' "> and wj.wjfl <![CDATA[ <> ]]> 
+				'CHOU_CHA_WEN_JUAN' </if> -->
+			<if test="status !=null and status !=''">
+				AND wj.status=#{status}
+			</if>
+			<if test="deptId !=null and deptId !=''">
+				AND wj.dept_id=#{deptId}
+			</if>
+			<if test="zdCode !=null and zdCode !=''">
+				AND wj.zd_code=#{zdCode}
+			</if>
+			<if test="wjzt !=null and wjzt !=''">
+				AND wjzt LIKE '%${wjzt}%'
+			</if>
+		</where>
+		order by wj.update_time DESC
+	</select>
+	
+	<select id="findByWjzt" resultType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		, u.name AS userName FROM hzsf_wj wj LEFT JOIN sys_user u ON
+		wj.update_user_id=u.id
+		WHERE 1=1
+		<if test="wjzt!=null">
+			AND wjzt like '%${wjzt}%'
+		</if>
+		order by update_time DESC
+	</select>
+
+
+</mapper>

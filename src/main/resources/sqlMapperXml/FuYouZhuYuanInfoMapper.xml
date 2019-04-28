@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.fuyou.FuYouZhuYuanInfoMapper">
+
+	<select id="selectedById" resultType="com.wangzhixuan.model.vo.fuyou.FuYouZhuYuanInfoVo">
+	select * from hzsf_fy_zy_info where zy_id=#{zyId}
+	</select>
+</mapper>

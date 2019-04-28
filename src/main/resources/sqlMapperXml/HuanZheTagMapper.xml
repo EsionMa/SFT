@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.huanzhe.HuanZheTagMapper">
+	<sql id="Base_Column_List">
+		id,hz_id as hzId,tag_code as tagCode,tag_name as
+		tagName,create_time as createTime, create_user_id as createUserId
+	</sql>
+	<select id="listByHzId" resultType="com.wangzhixuan.model.huanzhe.HuanZheTag">
+		select
+		<include refid="Base_Column_List"></include>
+		from hzsf_hz_tag
+		where 1=1
+		and hz_id = #{hzId}
+	</select>
+	<delete id="deleteByHzId">
+		delete from hzsf_hz_tag
+		where hz_id = #{hzId}
+	</delete>
+	<select id="findIdsByCode" resultType="java.lang.Long">
+		SELECT hz_id FROM hzsf_hz_tag WHERE 1=1
+		<if test="tagsName!=null">
+			AND tag_name=#{tagsName}
+		</if>
+		 GROUP BY  hz_id
+	</select>
+</mapper>

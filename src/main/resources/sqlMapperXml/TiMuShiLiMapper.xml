@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.TiMuShiLiMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id,tm_id,xx_id,tm_bt,tm_fl,txxz,dtnr,create_time as createTime,update_time as updateTime,create_user_id as createUserId,update_user_id as updateUserId
+    </sql>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.wangzhixuan.model.wenjuan.TiMu">
+    	insert into hzsf_wj_tm(tm_id,xx_id,tm_bt,tm_fl,txxz,dtnr,create_time,update_time,create_user_id,update_user_id
+    	values(#{tmId},#{xxId},#{tmBt},#{tmFl},#{txxz},#{dtnr},#{createTime},#{updateTime},#{createUserId},#{updateUserId})
+    </insert>
+    <select id="countByCondition" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) FROM hzsf_tm_sl
+        WHERE 1=1
+        <if test="staTime!=null">
+            AND create_time <![CDATA[ > ]]> #{staTime}
+        </if>
+        <if test="endTime!=null">
+            AND create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="deptId !=null and deptId !=''">
+            AND dept_id=#{deptId}
+        </if>
+        <if test="wjId !=null">
+            AND wj_id=#{wjId}
+        </if>
+        <if test="tmId !=null">
+            AND tm_id=#{tmId}
+        </if>
+        <if test="xxId !=null">
+            AND xx_id=#{xxId}
+        </if>
+    </select>
+    <select id="countByWjId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(DISTINCT wj_sl_id) FROM hzsf_tm_sl WHERE  wj_id=#{wjId}
+    </select>
+    <select id="queryWjByWjId" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.vo.WenJuanVo">
+        SELECT DISTINCT wj_sl_id AS wjslId FROM hzsf_tm_sl WHERE wj_id=#{wjId}
+    </select>
+</mapper>

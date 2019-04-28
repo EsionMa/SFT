@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.statics.OutStaticsMapper">
+
+    <select id="getByCondition" resultType="com.wangzhixuan.model.statics.OutStatics">
+        SELECT id,dept_id AS deptId,leave_count AS leaveCount,all_visit_percent AS allVisitPercent,all_visit_count AS allVisitCount ,success_visit_percent AS
+        successPercent,update_time AS updateTime,dept_name AS deptName,cytime,wait_visit_count AS waitVisit,already_visit_count AS alreadyVisit,
+        dead_count AS  deadCount,appointment_count AS appointmentVisit,error_num_count AS errorNum, no_response_count AS noResponse,
+        refuse_count AS refuseCount
+        FROM hzsf_cy_statics WHERE 1=1
+        <choose>
+            <when test="deptId!=null and deptId !=''">
+                AND dept_id=#{deptId}
+            </when>
+            <otherwise>
+                AND  dept_id IS NULL
+            </otherwise>
+        </choose>
+        <if test="staTime!=null and staTime!=''">
+            AND otherTime <![CDATA[ >= ]]> #{staTime}
+        </if>
+        <if test="endTime!=null">
+            AND otherTime <![CDATA[ <= ]]> #{endTime}
+        </if>
+        ORDER BY dept_id
+    </select>
+</mapper>

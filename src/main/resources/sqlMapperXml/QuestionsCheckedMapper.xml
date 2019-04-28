@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.admin.QuestionsCheckedMapper">
+    <!--抽查条件查询-->
+    <select id="slectData" parameterType="com.wangzhixuan.model.vo.admin.CheckedQuery" resultType="com.wangzhixuan.model.vo.admin.QuestionsCheckedVo">
+        SELECT  id, wjsl_id AS  wjslId,hz_name AS  hzName,item_id AS itemId,dc_time AS  dcTime, wj_id AS wjId,other_time AS  otherTime,dept_name AS deptName,
+          wj_name AS wjName, dc_user_name AS  dcUserName,fa_type AS  faType ,fa_id AS  faId,checked_user_name AS checkedName,
+          status,doctor_name AS doctorName,hzly,hz_id AS hzId,content
+           FROM hzsf_checked_sl
+           WHERE 1=1
+           <if test="hzName!='' and hzName!=null">
+               AND hz_name=#{hzName}
+           </if>
+           <if test="dcUserName!='' and dcUserName!=null">
+               AND dc_user_name=#{dcUserName}
+           </if>
+           <if test="faId!=null and faId!=''">
+               AND fa_id=#{faId}
+           </if>
+           <if test="deptId!=null and deptId!=''">
+               AND dept_id=#{deptId}
+           </if>
+           <if test="exeUserId!=''and exeUserId!=null">
+               AND create_user_id=#{exeUserId}
+           </if>
+           <if test="status!=''and status!=null">
+               AND status=#{status}
+           </if>
+           <choose>
+               <when test="timeType =='checked'.toString()">
+                   <if test="staDate!=''and staDate!=null">
+                      AND dc_time  <![CDATA[ >= ]]> #{staDate}
+                   </if>
+                   <if test="endDate!=''and endDate!=null">
+                       AND dc_time <![CDATA[ < ]]> #{endDate}
+                   </if>
+                   ORDER BY dc_time DESC
+               </when>
+               <when test="timeType =='leave'.toString()">
+                   <if test="staDate!=''and staDate!=null">
+                       AND other_time  <![CDATA[ >= ]]> #{staDate}
+                   </if>
+                   <if test="endDate!=''and endDate!=null">
+                       AND other_time <![CDATA[ < ]]> #{endDate}
+                   </if>
+                   ORDER BY other_time DESC
+               </when>
+               <otherwise>
+                   <if test="staDate!=''and staDate!=null">
+                       AND create_time  <![CDATA[ >= ]]> #{staDate}
+                   </if>
+                   <if test="endDate!=''and endDate!=null">
+                       AND create_time <![CDATA[ < ]]> #{endDate}
+                   </if>
+                   ORDER BY create_time DESC
+               </otherwise>
+           </choose>
+    </select>
+</mapper>

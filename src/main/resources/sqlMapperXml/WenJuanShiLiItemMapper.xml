@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.wenjuan.WenJuanShiLiItemMapper">
+    <!--通过问卷实例Id删除其相关的问题回答-->
+    <delete id="deleteByWjslId" parameterType="java.lang.Long">
+        DELETE FROM hzsf_wjsl_item_wj WHERE wjsl_id=#{id}
+    </delete>
+    <!--计算某个问题的回答数-->
+    <select id="countByWjId" resultType="java.lang.Integer">
+        SELECT  count(1) FROM hzsf_wjsl_item_wj WHERE wj_id=#{id}
+    </select>
+    <select id="queryWjByWjId" resultType="com.wangzhixuan.model.vo.WenJuanVo" parameterType="java.lang.Long">
+        SELECT wj_id AS id,wjsl_id AS wjslId,id AS itemId , dept_id AS deptId,dept_name AS deptName,exe_user_id AS updateUserId,
+          score AS grade,hz_name AS answerName,wjzt ,create_time AS dcDate
+           FROM hzsf_wjsl_item_wj
+           WHERE wj_id=#{wjId}
+    </select>
+    <select id="listWenjuans" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.wenjuan.WenJuanShiLiItem">
+        SELECT wj_id AS wjId,wjsl_id AS wjslId,score,wjzt FROM hzsf_wjsl_item_wj
+        WHERE  wjsl_id =#{wjslId}  AND fa_type !='9'
+    </select>
+</mapper>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.sqlserver.OracleMapper">
+
+	<!--科室增加 -->
+	<select id="selectAllDepts" resultType="com.wangzhixuan.model.SysOrganization">
+		SELECT
+		name,address,code,pid,TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime,id AS outId
+		FROM ambase.科室信息
+		WHERE 1=1
+		<if test="boStTime!=null and boStTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+
+	<!--字典添加 -->
+	<select id="selectAllDics" resultType="com.wangzhixuan.model.SysDictionaries">
+		SELECT
+    	code,name,parent_code AS parentCode,TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime
+		FROM ambase.字典区域信息
+		WHERE 1=1
+		<if test="boStTime!=null and boStTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+
+	<!--医生护士增加 -->
+	<select id="selectAllStaff" resultType="com.wangzhixuan.model.SysUser">
+		SELECT
+		id AS outId,name,organization_id AS outOrgId,user_type AS userType,
+		sex AS outSex,age,phone,TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime
+   		FROM ambase.医护人员信息
+		WHERE 1=1
+		<if test="boStTime!=null and boStTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss')<![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+
+	<!--患者增加 -->
+	<select id="selectAllPatients" resultType="com.wangzhixuan.model.huanzhe.HuanZheInfo">
+		/*SELECT
+		hzno,name,photo,TO_CHAR(deadtime,'yyyy-mm-dd hh24:mi:ss') AS deadtime,deadcause,sex,ybtype,ybno,
+		TO_CHAR(birthday,'yyyy-mm-dd hh24:mi:ss') AS birthday,marriage,isaliave,fixphone AS mobilephone,
+		mobilephone AS fixphone,ipphone,qqno,email,zlcard,idcardno,profession,nation,nation_ref,country,
+		country_ref,province,province_ref,city,city_ref,company,nativeplace,nativeaddr,addr,hzly,
+		card_type AS cardType,remark,TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime,hzno AS outId
+		FROM ambase.患者住院信息*/
+		SELECT name, sex,ybno,mobilephone,zy_no AS outId
+		FROM hzsf_hz_info
+		WHERE 1=1
+		<if test="zyNo!=null and zyNo!=''">
+			AND zy_no=#{zyNo}
+		</if>
+		<if test="boStTime!=null">
+			AND cytime <![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime <![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+
+	<!--住院添加 -->
+	<select id="selectAllHos" resultType="com.wangzhixuan.model.huanzhe.ZhuYuanInfo">
+		/*SELECT
+		hzno AS hzNo,name AS hzName,zy_no AS zyNo,
+		gc_doctor_id AS outGcDoctorId,gc_doctor_name AS gcDoctorName,
+		管床护士id AS outGcHsId,gc_hs_name AS gcHsName,
+		zr_doctor_id AS outZrDoctorId,zr_doctor_name AS zrDoctorName,
+		zz_doctor_id AS outZzDoctorId,zz_doctor_name AS zzDoctorName,
+		zy_doctor_id AS outZyDoctorId,zy_doctor_name AS zyDoctorName,
+		age,zycount,bq,cwno,TO_CHAR(rytime,'yyyy-mm-dd hh24:mi:ss') AS rytime,
+		ry_dept_id AS outRyDeptId,ry_dept_name AS ryDeptName,rytype,ryqk,plzd,
+		ryzd,cyzd,TO_CHAR(cytime,'yyyy-mm-dd hh24:mi:ss') AS cytime,
+		cy_dept_id AS outCyDeptId,cy_dept_name AS cyDeptName,cyqk,cyyz,
+		TO_CHAR(mztime,'yyyy-mm-dd hh24:mi:ss') AS mztime,mzno,
+		TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime
+		FROM ambase.患者住院信息*/
+		SELECT
+		hz_no AS hzNo,hz_name AS hzName,zy_no AS zyNo,gc_doctor_name AS  gcDoctorName,gc_hs_name AS gcHsName,
+		cytime,cy_dept_name AS cyDeptName
+		FROM hzsf_zy_info
+		WHERE 1=1
+		<if test="zyNo!=null and zyNo!=''">
+			AND zy_no=#{zyNo}
+		</if>
+		<if test="boStTime!=null and boStTime!=''">
+			AND cytime <![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND cytime <![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+
+	<!--患者联系人 -->
+	<select id="selectContarct" resultType="com.wangzhixuan.model.huanzhe.HuanZheContract">
+		SELECT
+		hzno AS outId,contact_name AS name,contact_gxtype AS gxtype,contact_sex AS sex,
+		contact_fixphone AS fixphone,contact_mobilephone AS mobilephone,
+		contact_addr AS addr,TO_CHAR(create_time,'yyyy-mm-dd hh24:mi:ss') AS createTime
+		FROM ambase.患者住院信息
+		WHERE 1=1
+		<if test="zyNo!=null and zyNo!=''">
+			AND zy_no=#{zyNo}
+		</if>
+		<if test="boStTime!=null and boStTime!=''">
+			AND TO_CHAR(cytime,'yyyy-mm-dd hh24:mi:ss')<![CDATA[>=]]>#{boStTime}
+		</if>
+		<if test="boEdTime!=null and boEdTime!=''">
+			AND TO_CHAR(cytime,'yyyy-mm-dd hh24:mi:ss')<![CDATA[<]]>#{boEdTime}
+		</if>
+	</select>
+	<!--计算时间内his系统所有出院人数-->
+	<select id="count" resultType="java.lang.Integer" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT COUNT(1) FROM hzsf_zy_info WHERE 1=1
+		<if test="boStTime!=null">
+			AND cytime <![CDATA[>]]> #{boStTime}
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime <![CDATA[<]]> #{boEdTime}
+		</if>
+	</select>
+	<!--用not in 语句查询所有的患者信息-->
+	<select id="getNotFoundPatient" resultType="com.wangzhixuan.model.huanzhe.HuanZheInfo" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		/*SELECT distinct hz_no AS hzno,hz_no AS outId,name,ref_property_sex AS sex,ybtype,ybno,to_char(birthday,'yyyy-MM-dd hh24:mi:ss') AS  birthday,ref_property_marriage AS marriage,isaliave,fixphone AS  mobilephone,zlcard,profession AS work,identitynum AS idcardno,
+		ref_property_nation AS nation,to_char(ryTime,'yyyy-MM-dd hh24:mi:ss') AS createTime,to_char(otherTime,'yyyy-MM-dd hh24:mi:ss') AS updateTime, ref_property_province AS provinceRef,ref_property_city AS cityRef,unit AS company,addr FROM  sft_sick_info */
+		SELECT hz_no AS hzno ,zy_no AS outId,name,ybtype,ybno
+		FROM hzsf_hz_info
+		where 1=1
+		<if test="boStTime!=null">
+			AND cytime<![CDATA[>]]> #{boStTime}
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime<![CDATA[<=]]> #{boEdTime}
+		</if>
+		<if test="ids!=null and ids.size()>0">
+			AND zy_no NOT IN
+			<foreach collection="ids" item="id" open="("
+					 close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	<!--用not in 语句查询所有的住院信息-->
+	<select id="getNotFoundHos" resultType="com.wangzhixuan.model.huanzhe.ZhuYuanInfo" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT	distinct hz_no AS outId,hz_no AS hzNo,zyno AS zyNo,zycount,bq,ref_dept_rydept AS ryDeptId,to_char(rytime,'yyyy-MM-dd hh24:mi:ss')  as rytime,cw AS cwno,ref_property_rytype AS  rytype,ref_property_ryqk as ryqk,
+		ryzd,blzd as plzd,cyyz,mznum AS mzno,cydept AS cyDeptId,to_char(cytime,'yyyy-MM-dd hh24:mi:ss') as cytime,age,name AS hzName,ref_staff_zgdoctor AS gcIdv,zgdoctor AS gcDoctorName,hs_id AS HsIdv,hs_name AS gcHsName,
+		to_char(rytime,'yyyy-MM-dd hh24:mi:ss') AS createTime,bqbh,cyyy,fcxm,kfxl,yyzd FROM sft_sick_info WHERE 1=1
+		<if test="boStTime!=null">
+			AND cytime<![CDATA[>]]> to_date(#{boStTime},'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime<![CDATA[<]]>to_date(#{boEdTime},'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="ids!=null and ids.size()>0">
+			AND zyno NOT IN
+			<foreach collection="ids" item="id" open="("
+					 close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	<!--not in查询所有联系人信息-->
+	<select id="getNotFoundContrac" resultType="com.wangzhixuan.model.huanzhe.HuanZheContract" parameterType="com.wangzhixuan.model.vo.huanzhe.PatientQuery">
+		SELECT  distinct  imname AS name,ref_property_imrelation AS gxtype,hz_no AS outId,imcellphone AS mobilephone,to_char(rytime,'yyyy-MM-dd hh24:mi:ss') AS createTime,
+		imaddr AS addr FROM sft_sick_info WHERE imname IS NOT NULL
+		<if test="boStTime!=null">
+			AND cytime<![CDATA[>]]> to_date(#{boStTime},'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="boEdTime!=null">
+			AND cytime<![CDATA[<]]>to_date(#{boEdTime},'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="ids!=null and ids.size()>0">
+			AND zyno NOT IN
+			<foreach collection="ids" item="id" open="("
+					 close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+</mapper>

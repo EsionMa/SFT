@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.scale.ScaleTableMapper">
+
+	<insert id="addItem">
+		INSERT INTO hzsf_table_type_item (table_id,type_id)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+            <![CDATA[( ]]>${id},${item}<![CDATA[)]]>
+		</foreach>
+	</insert>
+
+	<!--分页+搜索 -->
+	<select id="selectPage" parameterType="com.wangzhixuan.model.vo.scale.ScaleTableVo"
+		resultType="java.util.Map">
+		SELECT
+			st.id,st.status,st.name,st.type,st.create_time AS createTime,
+			st.create_user_name AS createUserName,st.update_time AS updateTime,
+			st.update_user_name AS updateUserName,d.name AS typeName
+		FROM 
+			hzsf_scale_table st,sys_dictionaries d
+		WHERE
+			st.type=d.code AND d.parent_code=#{parentCode}
+		<if test="status!=null and status!=''">
+			AND st.status=#{status}
+		</if>
+		<if test="name!=null and name!=''">
+			AND st.name LIKE '%${name}%'
+		</if>
+		<if test="type!=null and type!=''">
+			AND st.type=#{type}
+		</if>
+		ORDER BY st.update_time DESC
+	</select>
+	
+</mapper>

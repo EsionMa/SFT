@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.scale.ScaleCollectionMapper">
+	<sql id="Base_Column_List">
+		id,scale_id AS scaleId,collection_id AS collectionId,
+		create_time AS createTime,create_user_name AS createUserName,
+		update_time AS updateTime,update_user_name AS updateUserName
+	</sql>
+	
+	<!--根据量表ID获取采集表 -->
+	<select id="selectColectionsByScaleId"
+		resultType="com.wangzhixuan.model.scale.ScaleCollection">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		FROM hzsf_scale_collection
+		WHERE scale_id=#{scaleId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.SysUserMapper">
+
+	<resultMap id="userVoResultMap" type="com.wangzhixuan.model.vo.UserVo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="login_name" property="loginName" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="TINYINT" />
+		<result column="age" property="age" jdbcType="TINYINT" />
+		<result column="user_type" property="userType" jdbcType="TINYINT" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+
+		<result column="organizationName" property="organizationName"
+			jdbcType="VARCHAR" />
+		<result column="token" property="token" jdbcType="VARCHAR" />
+		<result column="token_time" property="tokenTime" jdbcType="TIME" />
+		<collection property="rolesList" ofType="SysRole">
+			<id column="roleId" property="id" />
+			<result column="roleName" property="name" />
+		</collection>
+		<collection property="organizationList" ofType="SysOrganization">
+			<id column="organizationId" property="id" />
+			<result column="organizationName" property="name" />
+		</collection>
+	</resultMap>
+
+	<resultMap id="BaseMap" type="com.wangzhixuan.model.SysUser">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="login_name" property="loginName" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="TINYINT" />
+		<result column="age" property="age" jdbcType="TINYINT" />
+		<result column="user_type" property="userType" jdbcType="TINYINT" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+
+		<!-- <result column="token" property="token" jdbcType="VARCHAR"/> -->
+		<!-- <result column="token_time" property="tokenTime" jdbcType="TIME"/> -->
+	</resultMap>
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id, login_name AS loginName, name, password, salt, sex,
+		age, phone,
+		user_type AS userType, status,
+		create_time AS createTime
+		,token,token_time as tokenTime
+	</sql>
+	
+	<!-- 已废弃 -->
+	<!-- <select id="selectUserVoById" resultMap="userVoResultMap"
+		parameterType="java.lang.Long">
+		SELECT
+		t.id,
+		t.token,
+		t.token_time,
+		login_name,
+		t.`name`,
+		`password`,
+		sex,
+		age,
+		user_type,
+		t.`status`,
+		organization_id,
+		t.create_time,
+		phone,
+		s.`name`
+		AS organizationName,
+		o.id AS roleId,
+		o.`name` AS roleName
+		FROM
+		sys_user t
+		LEFT JOIN sys_user_role r ON t.id = r.user_id
+		LEFT JOIN sys_role o ON
+		r.role_id = o.id
+		LEFT JOIN sys_organization s ON s.id =
+		t.organization_id
+		<where>
+			t.id = #{id}
+		</where>
+	</select> -->
+	<select id="selectUserVoById" parameterType="java.lang.Long" resultType="com.wangzhixuan.model.vo.UserVo">
+		SELECT 
+		u.id,u.login_name AS loginName,u.`name`,u.`password`,u.salt,u.sex,u.age,u.phone,
+		u.user_type AS userType,u.`status`,u.create_time AS createTime,
+		GROUP_CONCAT(DISTINCT r.id) AS roleIds,GROUP_CONCAT(DISTINCT o.id) AS organizationIds
+		FROM sys_user u
+		LEFT JOIN sys_user_role ur ON u.id=ur.user_id
+		LEFT JOIN sys_role r ON ur.role_id=r.id
+		LEFT JOIN sys_user_organization uo ON u.id=uo.user_id
+		LEFT JOIN sys_organization o ON uo.organization_id=o.id
+		<where>
+			u.id = #{id}
+		</where>
+		GROUP BY u.id
+	</select>
+	
+	<!-- 已废弃 -->
+	<!-- <select id="selectUserPage" resultType="java.util.Map">
+		SELECT
+		t.id, t.login_name AS loginName, t.`name`, t.phone,
+		t.`password`,
+		t.sex, t.age, t.create_time AS createTime, t.user_type AS
+		userType,
+		t.`status`, t.organization_id AS organizationId,
+		s.`name` AS
+		organizationName, group_concat(o.`name`) AS rolesList
+		FROM sys_user t
+		LEFT JOIN sys_user_role r ON t.id = r.user_id
+		LEFT JOIN sys_role o ON
+		r.role_id = o.id
+		LEFT JOIN sys_organization s ON s.id =
+		t.organization_id
+		<where>
+			<if test=" name != null and name != '' ">
+				t.name = #{name}
+			</if>
+			<if test=" organizationId != null "> AND t.organization_id = #{organizationId} 
+				</if>
+			<if test=" startTime != null ">
+                <![CDATA[ AND t.create_time >= #{startTime} ]]>
+			</if>
+			<if test=" endDate != null ">
+                <![CDATA[ AND t.create_time <= #{endDate} ]]>
+			</if>
+		</where>
+		GROUP BY t.id
+	</select> -->
+	<select id="selectUserPage" resultType="java.util.Map">
+		SELECT 
+		u.id,u.login_name AS loginName,u.`name`,u.`password`,u.salt,u.sex,u.age,u.phone,
+		u.user_type AS userType,u.`status`,u.create_time AS createTime,
+		GROUP_CONCAT(DISTINCT r.`name`) AS rolesList,GROUP_CONCAT(DISTINCT o.`name`) AS organizationList
+		FROM sys_user u
+		LEFT JOIN sys_user_role ur ON u.id=ur.user_id
+		LEFT JOIN sys_role r ON ur.role_id=r.id
+		LEFT JOIN sys_user_organization uo ON u.id=uo.user_id
+		LEFT JOIN sys_organization o ON uo.organization_id=o.id
+		<where>
+			<if test=" loginName != null and loginName != '' ">
+				u.login_name = #{loginName}
+			</if>
+			<if test=" name != null and name != '' ">
+				AND u.name = #{name}
+			</if>
+			<if test=" organizationId != null ">
+				AND o.id = #{organizationId} 
+			</if>
+			<if test=" startTime != null ">
+                <![CDATA[ AND u.create_time >= #{startTime} ]]>
+			</if>
+			<if test=" endDate != null ">
+                <![CDATA[ AND u.create_time <= #{endDate} ]]>
+			</if>
+			<if test=" seq != null ">
+                <![CDATA[ AND r.seq >= #{seq} ]]>
+			</if>
+		</where>
+		GROUP BY u.id
+	</select>
+	
+	<!-- 已废弃 -->
+	<!-- <select id="hasResourceUrlUser" resultMap="BaseMap">
+		SELECT DISTINCT u.id,u.name,u.user_type,u.organization_id FROM
+		sys_user u
+		INNER join sys_user_role ur on u.id=ur.user_id
+		INNER JOIN
+		sys_role r on ur.role_id=r.id
+		INNER JOIN sys_role_resource rr on
+		r.id=rr.role_id
+		INNER join sys_resource re on rr.resource_id=re.id
+		WHERE re.url=#{resourceUrl}
+		<if test="deptId != null">
+			and u.organization_id=#{deptId}
+		</if>
+		<if test="userType != null">
+			and u.user_type=#{userType}
+		</if>
+		<if test="userId != null">
+			and u.id=#{userId}
+		</if>
+	</select> -->
+	<select id="hasResourceUrlUser" resultMap="BaseMap">
+		SELECT DISTINCT u.id,u.name,u.user_type FROM sys_user u
+		INNER JOIN sys_user_role ur ON u.id=ur.user_id
+		INNER JOIN sys_role_resource rr ON ur.role_id= rr.role_id
+		INNER JOIN sys_resource re ON rr.resource_id=re.id
+		INNER JOIN sys_user_organization uo ON u.id=uo.user_id
+		WHERE re.url=#{resourceUrl}
+		<if test="deptId != null">
+			and uo.organization_id=#{deptId}
+		</if>
+		<if test="userType != null">
+			and u.user_type=#{userType}
+		</if>
+		<if test="userId != null">
+			and u.id=#{userId}
+		</if>
+	</select>
+	
+	<select id="findDeptByUser" resultType="com.wangzhixuan.model.SysOrganization" parameterType="java.lang.Long">
+		SELECT o.id,o.type,o.name
+		FROM sys_user u,sys_user_organization uo,sys_organization o
+		WHERE u.id=uo.user_id
+		AND uo.organization_id=o.id
+		AND u.id=#{id}
+	</select>
+
+</mapper>

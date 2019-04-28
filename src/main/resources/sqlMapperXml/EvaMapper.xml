@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangzhixuan.mapper.pj.PingJiaMapper">
+
+	<select id="findByCondition" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		SELECT
+		sl.hz_name AS hzName,sl.dept_id AS cyDeptId,sl.hz_id AS hzId,sl.hz_mobile_phone
+		AS phoneNum,pj.bpj_dept_name AS bpjDeptName,sl.dept_name AS cyName,sl.fa_id AS faId,
+		sl.other_time AS otherTime,pj.bpj_dept_id AS evaluateId, pj.bpj_name AS bpName,pj.pjlx,
+		pj.kspj,pj.pjnr,pj.pjly,pj.create_time AS createTime
+		FROM hzsf_pj pj LEFT JOIN hzsf_wj_sl sl ON sl.id=pj.pjly_ext
+		WHERE 1=1
+		<if test="hzName!=null and hzName!=''">
+			AND sl.hz_name=#{hzName}
+		</if>
+		<if test="cyDeptId!=null and cyDeptId!=''">
+			AND sl.dept_id=#{cyDeptId}
+		</if>
+		<if test="evaluateId!=null and evaluateId!=''">
+			AND pj.bpj_dept_id=#{evaluateId}
+		</if>
+		<if test="pjlx!=null and pjlx!=''">
+			AND pj.pjlx=#{pjlx}
+		</if>
+		<if test="staTime!=null">
+			AND sl.other_time <![CDATA[ >= ]]>#{staTime}
+		</if>
+		<if test="endTime!=null">
+			AND sl.other_time  <![CDATA[ <= ]]>#{endTime}
+		</if>
+		AND pj.pjnr !=""
+		ORDER BY sl.other_time
+	</select>
+
+	<select id="findByDeptIdAndTime" resultType="com.wangzhixuan.model.vo.pj.PingJiaVo" parameterType="java.util.Map">
+		SELECT sl.hz_name AS hzName,sl.dept_id AS cyDeptId,pj.phone_no AS phoneNo,pj.zy_no AS zyNo,pj.hz_id AS hzId,
+		pj.fa_type AS faType,
+		pj.bpj_dept_name AS bpjDeptName,sl.dept_name AS cyName,sl.fa_id AS faId,sl.other_time AS otherTime,
+		pj.bpj_dept_id AS evaluateId, pj.bpj_name AS bpjName,pj.pjlx ,pj.kspj,pj.pjnr,pj.pjly,pj.create_time AS createTime
+		FROM hzsf_pj pj LEFT JOIN hzsf_wj_sl sl ON sl.id=pj.pjly_ext
+		WHERE 1=1
+		<if test="cyDeptId!=null and cyDeptId!=''">
+			AND  sl.dept_id=#{cyDeptId}
+		</if>
+		<if test="staTime!=null">
+			AND sl.other_time <![CDATA[ >= ]]>   #{staTime}
+		</if>
+		<if test="endTime!=null">
+			AND sl.other_time  <![CDATA[ <= ]]>  #{endTime}
+		</if>
+		<if test="pjlx!=null and pjlx!=''">
+			and pj.pjlx=#{pjlx}
+		</if>
+		AND  pj.pjnr !=""
+		ORDER BY sl.other_time
+	</select>
+	<!--通过评价类型查询-->
+	<select id="findByPjlx" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT sl.hz_name AS hzName,sl.dept_id AS cyDeptId,
+		sl.dept_name AS cyName
+		FROM hzsf_pj pj LEFT JOIN hzsf_wj_sl sl ON sl.id=pj.pjly_ext
+		WHERE pj.pjnr !='' AND pj.fa_type=1
+		<if test="pjlx!=null and pjlx!=''">
+			AND  pj.pjlx=#{pjlx}
+		</if>
+		<if test="staTime!=null">
+			AND sl.other_time <![CDATA[ >= ]]>   #{staTime}
+		</if>
+		<if test="endTime!=null">
+			AND sl.other_time  <![CDATA[ <= ]]>  #{endTime}
+		</if>
+		GROUP BY sl.dept_id
+	</select>
+	<!--查询各个评价类型的人数-->
+	<select id="getEvaCount" resultType="com.wangzhixuan.model.vo.EvaCountVo">
+		SELECT count(*) AS count ,pjlx FROM hzsf_pj
+		WHERE pjnr!='' AND update_time BETWEEN #{staTime} AND  #{endTime}
+		GROUP BY pjlx
+	</select>
+</mapper>

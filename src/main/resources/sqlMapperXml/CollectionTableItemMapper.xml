@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.collection.CollectionTableItemMapper">
+	<sql id="Base_Column_List">
+		id,table_id AS tableId,item_id AS itemId,create_time AS createTime,
+		create_user_name AS createUserName,update_time AS
+		updateTime,update_user_name AS updateUserName
+	</sql>
+	
+	<!--根据采集表ID获取采集项-->
+	<select id="selectItemsByTableId"
+		resultType="com.wangzhixuan.model.collection.CollectionTableItem">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		FROM hzsf_collection_table_item
+		WHERE table_id=#{tableId}
+	</select>
+	
+</mapper>
